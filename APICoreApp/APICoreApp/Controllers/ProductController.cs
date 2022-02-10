@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using APICoreApp.Dtos;
 using APICoreApp.Models;
 using Dapper;
 using Microsoft.AspNetCore.Http;
@@ -33,6 +34,34 @@ namespace APICoreApp.Controllers
                 }
                 var result = await conn.QueryAsync<Product>("Get_Product_All", null, null, null, CommandType.StoredProcedure);
                 return result;
+            }
+        }
+
+        // GET: api/Product
+        [HttpGet("Paging",Name = "GetPaging")]
+        public async Task<PagedResult<Product>> GetPaging(string keyword, int categoryId, int pageIndex, int pageSize)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
+                }
+                var paramaters = new DynamicParameters();
+                paramaters.Add("@keyword", keyword);
+                paramaters.Add("@categoryId", categoryId);
+                paramaters.Add("@pageIndex", pageIndex);
+                paramaters.Add("@pageSize", pageSize);
+                paramaters.Add("@totalRow", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                var result = await conn.QueryAsync<Product>("Get_Product_All_Paging", paramaters, null, null, CommandType.StoredProcedure);
+                int totalRow = paramaters.Get<int>("@totalRow");
+                return new PagedResult<Product>()
+                {
+                    Items = result.ToList(),
+                    TotalRow = totalRow,
+                    PageIndex = pageIndex,
+                    PageSize = pageSize
+                };
             }
         }
 
