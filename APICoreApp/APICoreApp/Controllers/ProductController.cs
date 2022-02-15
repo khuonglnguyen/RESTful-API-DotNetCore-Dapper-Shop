@@ -11,6 +11,7 @@ using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace APICoreApp.Controllers
 {
@@ -19,14 +20,17 @@ namespace APICoreApp.Controllers
     public class ProductController : ControllerBase
     {
         private readonly string _connectionString;
-        public ProductController(IConfiguration configuration)
+        private readonly ILogger<ProductController> _logger;
+        public ProductController(IConfiguration configuration, ILogger<ProductController> logger)
         {
             _connectionString = configuration.GetConnectionString("DbConnectionString");
+            _logger = logger;
         }
         // GET: api/Product
         [HttpGet]
         public async Task<IEnumerable<Product>> Get()
         {
+            _logger.LogTrace("Test");
             using (var conn = new SqlConnection(_connectionString))
             {
                 if (conn.State == ConnectionState.Closed)
