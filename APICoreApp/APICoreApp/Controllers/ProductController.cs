@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using APICoreApp.Dtos;
+using APICoreApp.Filters;
 using APICoreApp.Models;
 using Dapper;
 using Microsoft.AspNetCore.Http;
@@ -84,7 +85,8 @@ namespace APICoreApp.Controllers
 
         // POST: api/Product
         [HttpPost]
-        public async Task<int> Post([FromBody] Product product)
+        [ValidateModel]
+        public async Task<IActionResult> Post([FromBody] Product product)
         {
             int newId = 0;
             using (var conn = new SqlConnection(_connectionString))
@@ -102,12 +104,13 @@ namespace APICoreApp.Controllers
                 var result = await conn.ExecuteAsync("Create_Product", paramaters, null, null, CommandType.StoredProcedure);
                 newId = paramaters.Get<int>("@id");
             }
-            return newId;
+            return Ok(newId);
         }
 
         // PUT: api/Product/5
         [HttpPut("{id}")]
-        public async Task Put(int id, [FromBody] Product product)
+        [ValidateModel]
+        public async Task<IActionResult> Put(int id, [FromBody] Product product)
         {
             using (var conn = new SqlConnection(_connectionString))
             {
@@ -122,6 +125,7 @@ namespace APICoreApp.Controllers
                 paramaters.Add("@isActive", product.IsActive);
                 paramaters.Add("@imageUrl", product.ImageUrl);
                 await conn.ExecuteAsync("Update_Product", paramaters, null, null, CommandType.StoredProcedure);
+                return Ok();
             }
         }
 
