@@ -44,6 +44,17 @@ namespace APICoreApp
             services.AddTransient<IRoleStore<AppRole>, RoleStore>();
             services.AddIdentity<AppUser, AppRole>().AddDefaultTokenProviders();
 
+            services.Configure<IdentityOptions>(opt =>
+            {
+                // Default Password settings.
+                opt.Password.RequireDigit = true;
+                opt.Password.RequireLowercase = false;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequireUppercase = false;
+                opt.Password.RequiredLength = 6;
+                opt.Password.RequiredUniqueChars = 1;
+            });
+
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(opt =>
