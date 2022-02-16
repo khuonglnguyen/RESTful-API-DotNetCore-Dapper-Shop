@@ -5,7 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Remove="Resources\Controllers\ProductController.en.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Resources\Controllers\ProductController.en.resx" />
   </ItemGroup>
 
   <ItemGroup>
