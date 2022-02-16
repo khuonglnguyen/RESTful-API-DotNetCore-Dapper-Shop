@@ -6,11 +6,14 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using APICoreApp.Data;
+using APICoreApp.Models;
 using APICoreApp.Resources;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Localization.Routing;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +40,10 @@ namespace APICoreApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IUserStore<AppUser>, UserStore>();
+            services.AddTransient<IRoleStore<AppRole>, RoleStore>();
+            services.AddIdentity<AppUser, AppRole>().AddDefaultTokenProviders();
+
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(opt =>
@@ -133,7 +140,7 @@ namespace APICoreApp
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
-
+            app.UseAuthentication();
             app.UseMvc();
         }
     }
