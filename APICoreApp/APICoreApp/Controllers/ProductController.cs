@@ -43,16 +43,17 @@ namespace APICoreApp.Controllers
         [HttpGet]
         public async Task<IEnumerable<Product>> Get()
         {
-            var culture = CultureInfo.CurrentCulture.Name;
-            string text = _localizer["Test"];
-            string text2 = _locService.GetLocalizedHtmlString("ForgotPassword");
+            //string text = _localizer["Test"];
+            //string text2 = _locService.GetLocalizedHtmlString("ForgotPassword");
             using (var conn = new SqlConnection(_connectionString))
             {
                 if (conn.State == ConnectionState.Closed)
                 {
                     conn.Open();
                 }
-                var result = await conn.QueryAsync<Product>("Get_Product_All", null, null, null, CommandType.StoredProcedure);
+                var paramaters = new DynamicParameters();
+                paramaters.Add("@language", CultureInfo.CurrentCulture.Name);
+                var result = await conn.QueryAsync<Product>("Get_Product_All", paramaters, null, null, CommandType.StoredProcedure);
                 return result;
             }
         }
@@ -72,6 +73,7 @@ namespace APICoreApp.Controllers
                 paramaters.Add("@categoryId", categoryId);
                 paramaters.Add("@pageIndex", pageIndex);
                 paramaters.Add("@pageSize", pageSize);
+                paramaters.Add("@language", CultureInfo.CurrentCulture.Name);
                 paramaters.Add("@totalRow", dbType: DbType.Int32, direction: ParameterDirection.Output);
                 var result = await conn.QueryAsync<Product>("Get_Product_All_Paging", paramaters, null, null, CommandType.StoredProcedure);
                 int totalRow = paramaters.Get<int>("@totalRow");
@@ -97,6 +99,7 @@ namespace APICoreApp.Controllers
                 }
                 var paramaters = new DynamicParameters();
                 paramaters.Add("@id", id);
+                paramaters.Add("@language", CultureInfo.CurrentCulture.Name);
                 var result = await conn.QueryAsync<Product>("Get_Product_By_Id", paramaters, null, null, CommandType.StoredProcedure);
                 return result.Single();
             }
@@ -115,10 +118,18 @@ namespace APICoreApp.Controllers
                     conn.Open();
                 }
                 var paramaters = new DynamicParameters();
+                paramaters.Add("@name", product.Name);
+                paramaters.Add("@description", product.Description);
+                paramaters.Add("@content", product.Content);
+                paramaters.Add("@seoDescription", product.SeoDescription);
+                paramaters.Add("@seoAlias", product.SeoAlias);
+                paramaters.Add("@seoTitle", product.SeoTitle);
+                paramaters.Add("@seoKeyword", product.SeoKeyword);
                 paramaters.Add("@sku", product.Sku);
                 paramaters.Add("@price", product.Price);
                 paramaters.Add("@isActive", product.IsActive);
                 paramaters.Add("@imageUrl", product.ImageUrl);
+                paramaters.Add("@language", CultureInfo.CurrentCulture.Name);
                 paramaters.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.Output);
                 var result = await conn.ExecuteAsync("Create_Product", paramaters, null, null, CommandType.StoredProcedure);
                 newId = paramaters.Get<int>("@id");
@@ -139,10 +150,18 @@ namespace APICoreApp.Controllers
                 }
                 var paramaters = new DynamicParameters();
                 paramaters.Add("@id", id);
+                paramaters.Add("@name", product.Name);
+                paramaters.Add("@description", product.Description);
+                paramaters.Add("@content", product.Content);
+                paramaters.Add("@seoDescription", product.SeoDescription);
+                paramaters.Add("@seoAlias", product.SeoAlias);
+                paramaters.Add("@seoTitle", product.SeoTitle);
+                paramaters.Add("@seoKeyword", product.SeoKeyword);
                 paramaters.Add("@sku", product.Sku);
                 paramaters.Add("@price", product.Price);
                 paramaters.Add("@isActive", product.IsActive);
                 paramaters.Add("@imageUrl", product.ImageUrl);
+                paramaters.Add("@language", CultureInfo.CurrentCulture.Name);
                 await conn.ExecuteAsync("Update_Product", paramaters, null, null, CommandType.StoredProcedure);
                 return Ok();
             }
