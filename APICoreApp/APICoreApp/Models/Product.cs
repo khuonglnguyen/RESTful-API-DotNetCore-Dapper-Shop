@@ -24,5 +24,7 @@ namespace APICoreApp.Models
         public string SeoDescription { get; set; }
         public string SeoKeyword { get; set; }
         public string SeoTitle { get; set; }
+        public string CategoryIds { get; set; }
+        public string CategoryName { get; set; }
     }
 }
