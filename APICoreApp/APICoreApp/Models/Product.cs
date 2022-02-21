@@ -9,8 +9,10 @@ namespace APICoreApp.Models
     public class Product
     {
         public int Id { get; set; }
-        [Required(ErrorMessage = "SKURequireErrorMsg")]
+        [Required(ErrorMessage = "RequireErrorMsg")]
+        [StringLength(8, ErrorMessage = "MinAndMaxLengthErrorMsg", MinimumLength = 6)]
         public string Sku { get; set; }
+        [Required(ErrorMessage = "RequireErrorMsg")]
         public float Price { get; set; }
         public float? DiscountPrice { get; set; }
         public bool IsActive { get; set; }
